@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projet cours d'école – École Etchecopar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --vert:#4e9a2c; --vert-clair:#eef6e8; --vert-moyen:#6db33f;
+    --bleu:#0f5a8c; --jaune:#f6dd2e; --rouge:#c8102e; --creme:#faf7f0; --texte:#24302a; --gris:#6b7770; --bord:#d9e3dc;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Nunito,system-ui,sans-serif;background:var(--creme);color:var(--texte);line-height:1.55}
+  .bandeau{height:8px;background:linear-gradient(90deg,var(--bleu) 0 40%,var(--jaune) 40% 60%,var(--vert) 60%)}
+  header{background:#fff;padding:24px 20px 70px;text-align:center;position:relative;overflow:hidden;border-bottom:0}
+  header::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:46px;background:linear-gradient(90deg,var(--vert-moyen),var(--vert));border-radius:50% 50% 0 0/100% 100% 0 0}
+  header::before{content:"";position:absolute;left:0;right:0;bottom:-1px;height:22px;background:var(--creme);border-radius:50% 50% 0 0/100% 100% 0 0;z-index:1}
+  .logo{display:block;margin:0 auto 10px;width:min(340px,80%);height:auto}
+  h1{margin:6px auto 0;max-width:640px;font-size:clamp(22px,4.6vw,32px);font-weight:800;color:var(--bleu)}
+  main{max-width:720px;margin:-24px auto 40px;padding:0 16px;position:relative;z-index:1}
+  .carte{background:#fff;border:1px solid var(--bord);border-radius:16px;padding:24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(78,154,44,.06)}
+  .intro p{margin:0 0 10px}
+  .intro .note{background:var(--vert-clair);border-left:4px solid var(--vert);padding:10px 14px;border-radius:8px;font-size:15px}
+  .question{font-weight:700;font-size:17px;margin:0 0 4px}
+  .aide{color:var(--gris);font-size:14px;margin:0 0 12px}
+  .req{color:var(--rouge)}
+  input[type=text],input[type=email],textarea{width:100%;padding:12px 14px;border:1.5px solid var(--bord);border-radius:10px;font:inherit;background:#fff}
+  input:focus,textarea:focus{outline:none;border-color:var(--vert);box-shadow:0 0 0 3px rgba(78,154,44,.15)}
+  textarea{min-height:90px;resize:vertical}
+  .choix{display:grid;gap:8px}
+  .choix.deux{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+  .choix label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--bord);border-radius:10px;cursor:pointer;transition:.15s}
+  .choix label:hover{border-color:var(--vert-moyen);background:#fbfdfb}
+  .choix input{accent-color:var(--vert);margin-top:4px;flex-shrink:0;width:18px;height:18px}
+  .choix label:has(input:checked){border-color:var(--vert);background:var(--vert-clair)}
+  .autre-champ{margin-top:8px;display:none}
+  .erreur{color:var(--rouge);font-size:14px;margin-top:8px;display:none}
+  .carte.invalide{border-color:var(--rouge)}
+  .carte.invalide .erreur{display:block}
+  .hp{position:absolute;left:-9999px}
+  .actions{text-align:center;margin-top:8px}
+  button{background:var(--vert);color:#fff;border:0;border-radius:999px;padding:14px 38px;font:inherit;font-weight:800;font-size:17px;cursor:pointer;box-shadow:0 4px 12px rgba(78,154,44,.25)}
+  button:hover{background:#3d7f21}
+  button:disabled{opacity:.6;cursor:wait}
+  .msg-erreur{color:var(--rouge);text-align:center;margin-top:12px;display:none}
+  .merci{display:none;text-align:center}
+  .merci .icone{font-size:54px}
+  .merci h2{color:var(--bleu);margin:6px 0 10px}
+  .prop{border:1.5px solid var(--bord);border-radius:12px;padding:14px;margin-bottom:12px;background:#fcfdfc;position:relative}
+  .prop-titre{font-weight:700;color:var(--bleu);margin:0 0 10px;font-size:15px}
+  .prop-grille{display:grid;grid-template-columns:170px 1fr;gap:10px}
+  .prop-grille .plein{grid-column:1/-1}
+  .prop select{width:100%;padding:12px 10px;border:1.5px solid var(--bord);border-radius:10px;font:inherit;background:#fff}
+  .prop input[type=url]{width:100%;padding:12px 14px;border:1.5px solid var(--bord);border-radius:10px;font:inherit}
+  .prop .suppr{position:absolute;top:10px;right:10px;background:none;border:0;box-shadow:none;color:var(--gris);font-size:20px;padding:2px 8px;cursor:pointer}
+  .prop .suppr:hover{color:var(--rouge);background:none}
+  .ajouter{background:#fff;color:var(--vert);border:2px dashed var(--vert);box-shadow:none;font-size:15px;padding:10px 20px;width:100%}
+  .ajouter:hover{background:var(--vert-clair)}
+  @media(max-width:520px){.prop-grille{grid-template-columns:1fr}}
+  footer{text-align:center;color:var(--gris);font-size:13px;padding:0 16px 30px}
+</style>
+</head>
+<body>
+<div class="bandeau"></div>
+<header>
+  <img class="logo" alt="École Etchecopar Ikastetxea – Grandir ensemble" src="logo.webp">
+  <h1>🌿 Projet de réaménagement et de végétalisation de nos cours d'école</h1>
+</header>
+
+<main>
+  <form id="sondage" novalidate>
+    <div class="carte intro">
+      <p><b>Chers parents,</b></p>
+      <p>Notre école souhaite poursuivre son projet de réaménagement et de végétalisation partielle des cours, afin d'offrir aux enfants des espaces plus agréables, plus naturels et mieux adaptés à leurs différents besoins : jouer, bouger, se retrouver, se reposer, apprendre dehors et bénéficier de davantage d'ombre et de végétation.</p>
+      <p>Pour construire ce projet, nous souhaitons identifier les compétences, expériences, contacts et bonnes volontés présents parmi les familles de l'école et leur entourage.</p>
+      <p class="note">Répondre positivement à ce questionnaire ne constitue <b>aucun engagement définitif</b>. Il s'agit simplement de constituer un premier réseau de personnes que nous pourrons solliciter, selon les besoins, aux différentes étapes du projet.</p>
+      <p style="margin:12px 0 0">Merci pour votre aide ! <span class="req">*</span> <span style="color:var(--gris);font-size:14px">= question obligatoire</span></p>
+    </div>
+
+    <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off">
+
+    <div class="carte" data-requis="texte" data-champ="nom">
+      <p class="question">Nom et prénom du parent répondant <span class="req">*</span></p>
+      <input type="text" name="nom" autocomplete="name">
+      <p class="erreur">Merci d'indiquer votre nom et prénom.</p>
+    </div>
+
+    <div class="carte" data-requis="texte" data-champ="enfants">
+      <p class="question">Enfant(s) scolarisé(s) <span class="req">*</span></p>
+      <p class="aide">Prénom et classe de chaque enfant</p>
+      <input type="text" name="enfants">
+      <p class="erreur">Merci d'indiquer le ou les enfants scolarisés.</p>
+    </div>
+
+    <div class="carte" data-requis="radio" data-champ="investissement">
+      <p class="question">Vous-même ou l'un de vos proches seriez-vous prêt(e) à vous investir dans le projet ? <span class="req">*</span></p>
+      <div class="choix">
+        <label><input type="radio" name="investissement" value="Oui, volontiers"> Oui, volontiers</label>
+        <label><input type="radio" name="investissement" value="Peut-être, selon les besoins et mes disponibilités"> Peut-être, selon les besoins et mes disponibilités</label>
+        <label><input type="radio" name="investissement" value="Non, pas actuellement"> Non, pas actuellement</label>
+      </div>
+      <p class="erreur">Merci de choisir une réponse.</p>
+    </div>
+
+    <div class="carte">
+      <p class="question">De quelle manière pourriez-vous éventuellement contribuer au projet ?</p>
+      <p class="aide">Plusieurs réponses possibles</p>
+      <div class="choix deux" data-groupe="contribution"></div>
+      <input type="text" class="autre-champ" data-autre="contribution" placeholder="Précisez…">
+    </div>
+
+    <div class="carte">
+      <p class="question">Dans quel(s) domaine(s) avez-vous, vous-même ou un proche, des compétences ou une expérience utiles au projet ?</p>
+      <p class="aide">Plusieurs réponses possibles</p>
+      <div class="choix deux" data-groupe="domaines"></div>
+      <input type="text" class="autre-champ" data-autre="domaines" placeholder="Précisez…">
+    </div>
+
+    <div class="carte">
+      <p class="question">Si vous le souhaitez, précisez votre métier ou domaine d'expérience (ou celui de votre proche)</p>
+      <input type="text" name="metier">
+    </div>
+
+    <div class="carte">
+      <p class="question">Quel temps pourriez-vous éventuellement consacrer au projet ?</p>
+      <p class="aide">Plusieurs réponses possibles</p>
+      <div class="choix" data-groupe="temps"></div>
+    </div>
+
+    <div class="carte">
+      <p class="question">Disposez-vous de matériel, de contacts professionnels ou de possibilités d'obtenir des matériaux utiles au projet ?</p>
+      <div class="choix">
+        <label><input type="radio" name="materiel" value="Oui"> Oui</label>
+        <label><input type="radio" name="materiel" value="Peut-être"> Peut-être</label>
+        <label><input type="radio" name="materiel" value="Non"> Non</label>
+      </div>
+      <p class="aide" style="margin:14px 0 6px">Vous pouvez préciser le matériel, les matériaux, les contacts ou les possibilités :</p>
+      <textarea name="materiel_details"></textarea>
+    </div>
+
+    <div class="carte">
+      <p class="question">Avez-vous des idées ou suggestions pour le futur aménagement des cours ?</p>
+      <p class="aide">Exemples : végétalisation, espaces ombragés, jeux, espaces calmes, jardins, mobilier, activités extérieures, récupération de l'eau, revêtements, espaces sportifs…</p>
+      <textarea name="idees"></textarea>
+    </div>
+
+    <div class="carte propositions">
+      <p class="question">🌸 Les propositions pour la cour : plantes, objets, jeux, mobilier…</p>
+      <p class="aide">Ce sont les enfants qui profiteront de la cour : <b>prenez un moment pour leur demander ce qu'ils aimeraient y trouver</b>, et ajoutez aussi vos propres idées. Pour chaque proposition, indiquez si l'idée vient de votre enfant ou de vous. Si vous avez trouvé un exemple sur internet (magasin, photo, idée), collez son lien : nous ferons un tableau récapitulatif de toutes les propositions.</p>
+      <div id="liste-props"></div>
+      <button type="button" class="ajouter" id="ajouter-prop">+ Ajouter une proposition</button>
+    </div>
+
+    <div class="carte enfants-carte">
+      <p class="question">🧒 La parole aux enfants</p>
+      <p class="aide">Demandez à votre enfant : « Qu'est-ce que tu aimerais avoir ou faire dans la cour de l'école ? » et notez sa réponse avec ses mots à lui (ou elle). Vous pouvez indiquer son prénom et sa classe.</p>
+      <textarea name="parole_enfants" placeholder="ex : Léa (CE1) : « une cabane pour se cacher et des fleurs qui sentent bon »"></textarea>
+    </div>
+
+    <div class="carte" data-requis="radio" data-champ="recontact">
+      <p class="question">Acceptez-vous que l'école vous recontacte dans le cadre de ce projet ? <span class="req">*</span></p>
+      <div class="choix">
+        <label><input type="radio" name="recontact" value="Oui"> Oui</label>
+        <label><input type="radio" name="recontact" value="Non"> Non</label>
+      </div>
+      <div id="bloc-contact" style="display:none;margin-top:14px">
+        <p class="aide" style="margin-bottom:6px">Votre numéro de téléphone ou votre adresse mail :</p>
+        <input type="text" name="contact">
+      </div>
+      <p class="erreur">Merci de choisir une réponse.</p>
+    </div>
+
+    <div class="actions">
+      <button type="submit" id="envoyer">Envoyer mes réponses</button>
+      <p class="msg-erreur" id="msg-erreur">Oups, l'envoi n'a pas fonctionné. Vérifiez votre connexion et réessayez.</p>
+    </div>
+  </form>
+
+  <div class="carte merci" id="merci">
+    <div class="icone">🌱</div>
+    <h2>Eskerrik asko ! Merci pour votre participation !</h2>
+    <p>Vos réponses vont nous permettre d'identifier les compétences, les idées et les bonnes volontés présentes au sein des familles.</p>
+    <p>Le projet se construira progressivement, en tenant compte des besoins des enfants, des contraintes techniques et réglementaires ainsi que des possibilités financières de l'établissement.</p>
+    <p>Nous reviendrons vers les personnes volontaires lorsque les différentes étapes du projet seront définies.</p>
+    <p><b>Merci de contribuer à faire évoluer les cours de notre école !</b></p>
+  </div>
+</main>
+
+<footer>École Etchecopar · 20 avenue du Bois de la Ville · 64120 Saint-Palais</footer>
+
+<script>
+// Les réponses partent vers un Google Sheets via un script Google (voir Code.gs)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJePm-XgV0mFW07GK8XZFNWKHgO61uR-FKa-kEvdOnvyX6XzO05m-qIN5dGo9u55TgFw/exec";
+const TYPES = ["Plante / arbre","Jeu / équipement","Mobilier (banc, table…)","Ombrage (voile, pergola…)","Jardin / potager","Aménagement / sol","Autre"];
+const liste = document.getElementById("liste-props");
+let compteur = 0;
+
+function ajouterProp() {
+  compteur++;
+  const d = document.createElement("div");
+  d.className = "prop";
+  d.innerHTML = `
+    <p class="prop-titre">Proposition</p>
+    <button type="button" class="suppr" title="Supprimer">×</button>
+    <div class="prop-grille">
+      <select class="p-qui plein"><option>💡 Idée de mon enfant</option><option>💡 Idée du parent</option><option>💡 Idée commune parent + enfant</option></select>
+      <select class="p-type">${TYPES.map(t => `<option>${t}</option>`).join("")}</select>
+      <input type="text" class="p-nom" placeholder="Quoi ? ex : lavande, banc en bois, cabane…">
+      <input type="url" class="p-lien plein" placeholder="Lien internet (facultatif) : https://…">
+      <input type="text" class="p-com plein" placeholder="Où dans la cour / pourquoi / quantité (facultatif)">
+    </div>`;
+  d.querySelector(".suppr").onclick = () => { d.remove(); numeroter(); };
+  liste.append(d);
+  numeroter();
+}
+function numeroter() {
+  liste.querySelectorAll(".prop").forEach((p, i) => p.querySelector(".prop-titre").textContent = "Proposition " + (i + 1));
+}
+document.getElementById("ajouter-prop").onclick = ajouterProp;
+ajouterProp();
+
+function lirePropositions() {
+  return [...liste.querySelectorAll(".prop")].map(p => ({
+    qui: p.querySelector(".p-qui").value.replace("💡 ", ""),
+    type: p.querySelector(".p-type").value,
+    nom: p.querySelector(".p-nom").value.trim(),
+    lien: p.querySelector(".p-lien").value.trim(),
+    com: p.querySelector(".p-com").value.trim()
+  })).filter(p => p.nom || p.lien);
+}
+
+const groupes = {
+  contribution: ["Participer à des travaux ou à un chantier participatif","Apporter des conseils techniques","Participer à la réflexion sur l'aménagement des espaces","Apporter des conseils sur la végétalisation et les plantations","Aider à rechercher des matériaux ou des fournisseurs","Prêter ou mettre à disposition du matériel","Apporter des conseils administratifs ou juridiques","Apporter des conseils sur les normes de sécurité et d'accessibilité","Aider à rechercher des financements, subventions ou partenariats","Mettre l'école en relation avec des professionnels ou entreprises","Autre"],
+  domaines: ["Travaux publics / terrassement / sols","Maçonnerie","Construction / bâtiment","Menuiserie / construction bois","Paysagisme","Jardinage / espaces verts","Architecture","Bureau d'études / maîtrise d'œuvre","Structures extérieures : pergolas, préaux, ombrages…","Réseaux / évacuation et gestion des eaux pluviales","Sécurité / prévention des risques","Accessibilité","Réglementation des établissements recevant du public (ERP)","Droit / conseil juridique","Environnement / biodiversité","Recherche de financements / subventions","Autre"],
+  temps: ["Une intervention ponctuelle de quelques heures","Une demi-journée","Une ou plusieurs journées pour des travaux participatifs","Quelques heures ponctuellement pour participer à la réflexion","Un accompagnement plus régulier durant certaines étapes du projet","Difficile à déterminer pour le moment"]
+};
+
+for (const [nom, options] of Object.entries(groupes)) {
+  const zone = document.querySelector(`[data-groupe="${nom}"]`);
+  options.forEach(o => {
+    const l = document.createElement("label");
+    const i = document.createElement("input");
+    i.type = "checkbox"; i.name = nom; i.value = o;
+    l.append(i, " " + o);
+    zone.append(l);
+    if (o === "Autre") i.addEventListener("change", () => {
+      document.querySelector(`[data-autre="${nom}"]`).style.display = i.checked ? "block" : "none";
+    });
+  });
+}
+
+const form = document.getElementById("sondage");
+form.querySelectorAll('input[name="recontact"]').forEach(r => r.addEventListener("change", () => {
+  document.getElementById("bloc-contact").style.display = form.recontact.value === "Oui" ? "block" : "none";
+}));
+form.addEventListener("input", e => e.target.closest(".carte")?.classList.remove("invalide"));
+
+function coches(nom) {
+  const vals = [...form.querySelectorAll(`input[name="${nom}"]:checked`)].map(i => i.value);
+  const autre = document.querySelector(`[data-autre="${nom}"]`);
+  return vals.map(v => v === "Autre" && autre && autre.value.trim() ? "Autre : " + autre.value.trim() : v).join(" ; ") || "—";
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  let premier = null;
+  form.querySelectorAll("[data-requis]").forEach(c => {
+    const champ = c.dataset.champ;
+    const ok = c.dataset.requis === "texte" ? form[champ].value.trim() !== "" : !!form.querySelector(`input[name="${champ}"]:checked`);
+    c.classList.toggle("invalide", !ok);
+    if (!ok && !premier) premier = c;
+  });
+  if (premier) { premier.scrollIntoView({behavior:"smooth", block:"center"}); return; }
+  if (form._honey.value) return;
+
+  const props = lirePropositions();
+  const donnees = {
+    nom: form.nom.value.trim(),
+    enfants: form.enfants.value.trim(),
+    investissement: form.investissement.value,
+    contributions: coches("contribution"),
+    domaines: coches("domaines"),
+    metier: form.metier.value.trim() || "—",
+    temps: coches("temps"),
+    materiel: form.materiel.value || "—",
+    materiel_details: form.materiel_details.value.trim() || "—",
+    idees: form.idees.value.trim() || "—",
+    parole_enfants: form.parole_enfants.value.trim() || "—",
+    nb_propositions: String(props.length),
+    propositions_json: JSON.stringify(props),
+    recontact: form.recontact.value,
+    contact: form.contact.value.trim() || "—"
+  };
+
+  const bouton = document.getElementById("envoyer");
+  const msg = document.getElementById("msg-erreur");
+  bouton.disabled = true; bouton.textContent = "Envoi en cours…"; msg.style.display = "none";
+  try {
+    if (SCRIPT_URL.startsWith("COLLER")) throw new Error("URL du script non renseignée");
+    await fetch(SCRIPT_URL, {method:"POST", mode:"no-cors", body: new URLSearchParams(donnees)});
+    form.style.display = "none";
+    document.getElementById("merci").style.display = "block";
+    window.scrollTo({top:0, behavior:"smooth"});
+  } catch (err) {
+    msg.style.display = "block";
+    bouton.disabled = false; bouton.textContent = "Envoyer mes réponses";
+  }
+});
+</script>
+</body>
+</html>
